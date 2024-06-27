@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KPIs</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        
+        <header>
+            <h1>KPIs and Visualizations</h1>
+            <form action="" method="get" id="filter-form">
+                <label for="department">Select Department:</label>
+                <select name="department" id="department" onchange="document.getElementById('filter-form').submit()">
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {% if dept == selected_department %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                    <option value="Unknown" {% if selected_department == 'Unknown' %}selected{% endif %}>Onbekend</option>
+                </select>
+                
+                <label for="classification">Select Classification:</label>
+                {% for cls in classifications %}
+                <div>
+                    <input type="checkbox" name="classification" value="{{ cls }}" id="classification_{{ loop.index }}" {% if cls in selected_classifications %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+                    <label for="classification_{{ loop.index }}">{{ cls }}</label>
+                </div>
+                {% endfor %}
+            </form>
+            <form action="{{ url_for('download_filtered_dataframe') }}" method="post">
+                <input type="hidden" name="department" value="{{ selected_department }}">
+                <input type="hidden" name="classification" value="{{ selected_classifications|join(',') }}">
+                <button type="submit">Download</button>
+            </form>
+            <button onclick="location.href='{{ url_for('full_table', department=selected_department, classification=selected_classifications|join(',')) }}'">View Full Table</button>
+        </header>
+        
+        <section class="summary">
+            <div class="kpi-box">
+                <h3>Classification Counts</h3>
+                <p>{% for classification, count in classification_counts.items() %}<strong>{{ classification }}:</strong> {{ count }}<br>{% endfor %}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Total Pages * Students</h3>
+                <p>{{ total_pages_students }}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Average Pages * Students</h3>
+                <p>{{ avg_pages_students }}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Average Page Count</h3>
+                <p>{{ avg_pagecount }}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Average Word Count</h3>
+                <p>{{ avg_wordcount }}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Total Picture Count</h3>
+                <p>{{ picture_count }}</p>
+            </div>
+        </section>
+        
+        <section class="highest-scoring">
+            <h2>Highest Scoring Entries by Pages * Students</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Filename</th>
+                        <th>Pages * Students</th>
+                        <th>Classification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in highest_scoring %}
+                    <tr>
+                        <td><a href="{{ entry.url }}">{{ entry.Filename }}</a></td>
+                        <td>{{ entry['Pages * Students'] }}</td>
+                        <td>{{ entry['Classification'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+        
+        <section class="highest-per-course">
+            <h2>Highest Pages * Students per Unique Course Code</h2>
+            {{ highest_per_course | safe }}
+        </section>
+        
+        <section class="top-courses">
+            <h2>Top 10 Courses by Pages * Students</h2>
+            <img src="{{ image_path }}" alt="Top Courses by Pages * Students">
+        </section>
+    </div>
+    <script>
+        // Add JavaScript to handle form submission and display error popup
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const formData = new FormData(form);
+                const response = await fetch('/download_dataframe', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (data.error) {
+                    alert(data.error); // Display error message as a popup
+                } else {
+                    // Handle successful file download
+                    // For example, redirect to a success page or perform other actions
+                }
+            });
+        });
+    </script>
+</body>
+</html>

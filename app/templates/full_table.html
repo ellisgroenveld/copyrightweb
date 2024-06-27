@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Table</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Full Table</h1>
+            <form action="{{ download_url }}" method="post">
+                <button type="submit">Download Filtered Data</button>
+            </form>
+        </header>
+        
+        <section class="full-table">
+            {{ table_html | safe }}
+        </section>
+    </div>
+</body>
+</html>

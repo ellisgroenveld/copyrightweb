@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Columns</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+    <h1>Select Columns to Map to Predefined Columns</h1>
+    
+    <form action="" method="post">
+        <table>
+            <tr>
+                <th>Predefined Column</th>
+                <th>Select Column from Uploaded File</th>
+            </tr>
+            {% for predefined_column in predefined_columns %}
+            <tr>
+                <td>{{ predefined_column }}</td>
+                <td>
+                    <select name="columns">
+                        <option value="">None</option>
+                        {% for column in columns %}
+                        <option value="{{ column }}">{{ column }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        <input type="submit" value="Create DataFrame">
+    </form>
+    </div>
+</body>
+</html>
