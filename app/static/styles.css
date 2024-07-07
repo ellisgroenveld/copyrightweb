@@ -8,7 +8,7 @@ body {
     padding: 0;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Align items at the top */
+    align-items: flex-start;
     min-height: 100vh;
     box-sizing: border-box;
 }
@@ -20,12 +20,12 @@ body {
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 1200px; /* Increased max-width for larger forms */
+    max-width: 1500px;
     box-sizing: border-box;
-    margin: 20px; /* Added margin to prevent content from touching the edges on smaller screens */
+    margin: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center content horizontally */
+    align-items: center;
 }
 
 /* Styling for all input fields */
@@ -68,7 +68,7 @@ input[type="submit"] {
 }
 
 input[type="submit"]:hover {
-    background-color: #d4172b; /* Slightly darker red */
+    background-color: #d4172b;
 }
 
 /* Styling for headers */
@@ -80,7 +80,7 @@ h1, h2 {
 
 h1 {
     font-size: 2rem;
-    color: #e81a31; /* red */
+    color: #e81a31;
 }
 
 /* Header styling */
@@ -95,7 +95,7 @@ form {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center items horizontally */
+    align-items: center;
     width: 100%;
 }
 
@@ -121,70 +121,9 @@ section.highest-scoring table,
     border-collapse: collapse;
 }
 
-/* Summary section styling */
-.summary {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.kpi-box {
-    flex: 0 0 calc(33.33% - 20px); /* Three boxes in a row with margin between */
-    background-color: #f2f2f2; /* light gray */
-    border-radius: 10px;
-    padding: 20px;
-    margin: 10px;
-}
-
-.kpi-box h3 {
-    color: #e81a31; /* red */
-    margin-top: 0;
-}
-
-.kpi-box p {
-    margin: 0;
-}
-
-/* Highest per course section styling */
-.highest-per-course {
-    margin-top: 20px;
-}
-
-.highest-per-course table {
+section.highest-scoring .table-wrapper {
     width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e81a31; /* red */
-}
-
-.highest-per-course th, .highest-per-course td {
-    border: 1px solid #e81a31; /* red */
-    padding: 8px;
-    text-align: left;
-}
-
-.highest-per-course th {
-    background-color: #e81a31; /* red */
-    color: white;
-}
-
-.highest-per-course tr:nth-child(even) {
-    background-color: #f2f2f2; /* light gray */
-}
-
-/* Styling specific to highest-scoring section */
-section.highest-scoring {
-    width: 100%;
-    margin-bottom: 40px;
-}
-
-section.highest-scoring h2 {
-    color: #e81a31; /* red */
-    margin-bottom: 20px;
-}
-
-section.highest-scoring table {
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 section.highest-scoring th,
@@ -216,4 +155,51 @@ section.highest-scoring a:hover {
     text-decoration: underline;
 }
 
+/* Summary section styling */
+.summary {
+    display: flex;
+    flex-wrap: wrap;
+}
 
+.kpi-box {
+    flex: 0 0 calc(33.33% - 20px);
+    background-color: #f2f2f2;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+}
+
+.kpi-box h3 {
+    color: #e81a31;
+    margin-top: 0;
+}
+
+.kpi-box p {
+    margin: 0;
+}
+
+/* Highest per course section styling */
+.highest-per-course {
+    margin-top: 20px;
+}
+
+.highest-per-course table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e81a31;
+}
+
+.highest-per-course th, .highest-per-course td {
+    border: 1px solid #e81a31;
+    padding: 8px;
+    text-align: left;
+}
+
+.highest-per-course th {
+    background-color: #e81a31;
+    color: white;
+}
+
+.highest-per-course tr:nth-child(even) {
+    background-color: #f2f2f2;
+}

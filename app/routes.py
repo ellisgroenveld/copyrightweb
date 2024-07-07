@@ -106,6 +106,8 @@ def select_columns(filename):
 def show_kpis(filename):
     department = request.args.get('department', 'All')
     selected_classifications = request.args.getlist('classification')
+    status_filter = request.args.get('status', 'All')
+    pagecount_toggle = request.args.get('pagecount_toggle', 'off') == 'on'
     
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     df = pd.read_excel(file_path)
@@ -118,6 +120,14 @@ def show_kpis(filename):
     if selected_classifications:
         df = df[df['Classification'].isin(selected_classifications)]
     
+    # Filter by status if not 'All'
+    if status_filter != 'All':
+        df = df[df['Status'] == status_filter]
+    
+    # Filter by pagecount if toggle is on
+    if pagecount_toggle:
+        df = df[df['pagecount'] > 50]
+    
     # KPIs and Visualizations
     classification_counts = df['Classification'].value_counts().to_dict()
     total_pages_students = df['Pages * Students'].sum()
@@ -126,10 +136,10 @@ def show_kpis(filename):
     avg_wordcount = df['wordcount'].mean()
     picture_count = df['picturecount'].sum()
     
-    highest_scoring = df[['Filename', 'url','Pages * Students', 'Classification']].sort_values(by='Pages * Students', ascending=False).head(50)
+    highest_scoring = df[['Filename', 'url', 'pagecount', 'Classification', 'Status', 'Owner', 'Course code', 'ML Prediction']].sort_values(by='pagecount', ascending=False)
     highest_scoring_list = highest_scoring.to_dict(orient='records')
     
-    highest_per_course = df.groupby('Course code')['Pages * Students'].sum().sort_values(ascending=False).head(10).reset_index()
+    highest_per_course = df.groupby('Course code')['pagecount'].sum().sort_values(ascending=False).head(10).reset_index()
     
     department_counts = df['Department'].value_counts().to_dict()
     material_types_counts = df['Filetype'].value_counts().to_dict()
@@ -176,8 +186,11 @@ def show_kpis(filename):
         image_path=url_for('static', filename='uploads/additional_kpis.png'),
         departments=['All'] + sorted(DEPARTMENTS),
         classifications=sorted(CLASSIFICATIONS),
+        statuses=['All', 'Deleted', 'Published'],
         selected_department=department,
-        selected_classifications=selected_classifications
+        selected_classifications=selected_classifications,
+        selected_status=status_filter,
+        pagecount_toggle=pagecount_toggle
     )
 
 @app.route('/full_table', methods=['GET'])
