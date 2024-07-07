@@ -130,20 +130,22 @@ def show_kpis(filename):
     
     # KPIs and Visualizations
     classification_counts = df['Classification'].value_counts().to_dict()
+    ml_prediction_counts = df['ML Prediction'].value_counts().to_dict()
+    type_counts = df['Type'].value_counts().to_dict()
+    status_counts = df['Status'].value_counts().to_dict()
     total_pages_students = df['Pages * Students'].sum()
     avg_pages_students = df['Pages * Students'].mean()
     avg_pagecount = df['pagecount'].mean()
     avg_wordcount = df['wordcount'].mean()
     picture_count = df['picturecount'].sum()
     
-    highest_scoring = df[['Filename', 'url', 'pagecount', 'Classification', 'Status', 'Owner', 'Course code', 'ML Prediction']].sort_values(by='pagecount', ascending=False)
+    highest_scoring = df[['Filename', 'url', 'pagecount', 'Classification', 'Status', 'Owner', 'Course code', 'ML Prediction', 'Reliability', 'Type', '#students_registered']].sort_values(by='pagecount', ascending=False)
     highest_scoring_list = highest_scoring.to_dict(orient='records')
     
     highest_per_course = df.groupby('Course code')['pagecount'].sum().sort_values(ascending=False).head(10).reset_index()
     
     department_counts = df['Department'].value_counts().to_dict()
     material_types_counts = df['Filetype'].value_counts().to_dict()
-    status_counts = df['Status'].value_counts().to_dict()
     
     custom_palette = ['#e81a31', '#ffffff', '#000000']
     sns.set_palette(custom_palette)
@@ -176,6 +178,9 @@ def show_kpis(filename):
     return render_template(
         'kpis.html',
         classification_counts=classification_counts,
+        ml_prediction_counts=ml_prediction_counts,
+        type_counts=type_counts,
+        status_counts=status_counts,
         total_pages_students=total_pages_students,
         avg_pages_students=avg_pages_students,
         avg_pagecount=avg_pagecount,

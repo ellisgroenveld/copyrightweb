@@ -45,13 +45,24 @@
                 <input type="hidden" name="pagecount_toggle" value="{{ pagecount_toggle }}">
                 <button type="submit">Download</button>
             </form>
-            <button onclick="location.href='{{ url_for('full_table', department=selected_department, classification=selected_classifications|join(','), status=selected_status, pagecount_toggle=pagecount_toggle) }}'">View Full Table</button>
         </header>
         
         <section class="summary">
             <div class="kpi-box">
                 <h3>Classification Counts</h3>
                 <p>{% for classification, count in classification_counts.items() %}<strong>{{ classification }}:</strong> {{ count }}<br>{% endfor %}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>ML Prediction Counts</h3>
+                <p>{% for prediction, count in ml_prediction_counts.items() %}<strong>{{ prediction }}:</strong> {{ count }}<br>{% endfor %}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Type Counts</h3>
+                <p>{% for type, count in type_counts.items() %}<strong>{{ type }}:</strong> {{ count }}<br>{% endfor %}</p>
+            </div>
+            <div class="kpi-box">
+                <h3>Status Counts</h3>
+                <p>{% for status, count in status_counts.items() %}<strong>{{ status }}:</strong> {{ count }}<br>{% endfor %}</p>
             </div>
             <div class="kpi-box">
                 <h3>Total Pages * Students</h3>
@@ -70,73 +81,56 @@
                 <p>{{ avg_wordcount }}</p>
             </div>
             <div class="kpi-box">
-                <h3>Total Picture Count</h3>
+                <h3>Picture Count</h3>
                 <p>{{ picture_count }}</p>
             </div>
         </section>
         
         <section class="highest-scoring">
-            <h2>Highest Scoring Entries by Pages</h2>
+            <h2>Highest Scoring Materials</h2>
             <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
                         <th>Filename</th>
-                        <th>Pagecount</th>
+                        <th>Page Count</th>
                         <th>Classification</th>
                         <th>Status</th>
                         <th>Owner</th>
                         <th>Course Code</th>
-                        <th>ML Prediction</th>
+                        <th>ML Prediction & Reliabilityy</th>
+                        <th>Type</th>
+                        <th># Students Registered</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for entry in highest_scoring %}
+                    {% for item in highest_scoring %}
                     <tr>
-                        <td><a href="{{ entry.url }}">{{ entry.Filename }}</a></td>
-                        <td>{{ entry.pagecount }}</td>
-                        <td>{{ entry.Classification }}</td>
-                        <td>{{ entry.Status }}</td>
-                        <td>{{ entry.Owner }}</td>
-                        <td>{{ entry['Course code'] }}</td>
-                        <td>{{ entry['ML Prediction'] }}</td>
+                        <td><a href="{{ item['url'] }}" target="_blank">{{ item['Filename'] }}</a></td>
+                        <td>{{ item['pagecount'] }}</td>
+                        <td>{{ item['Classification'] }}</td>
+                        <td>{{ item['Status'] }}</td>
+                        <td>{{ item['Owner'] }}</td>
+                        <td>{{ item['Course code'] }}</td>
+                        <td>{{ item['ML Prediction'] }} - {{ item['Reliability'] }}%</td>
+                        <td>{{ item['Type'] }}</td>
+                        <td>{{ item['#students_registered'] }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-        </div>
+            </div>
         </section>
-        
+
+        <section class="charts">
+            <h2>Visualizations</h2>
+            <img src="{{ image_path }}" alt="KPIs Visualizations">
+        </section>
+
         <section class="highest-per-course">
-            <h2>Highest Pages * Students per Unique Course Code</h2>
-            {{ highest_per_course | safe }}
-        </section>
-        
-        <section class="top-courses">
-            <h2>Top 10 Courses by Pages * Students</h2>
-            <img src="{{ image_path }}" alt="Top Courses by Pages * Students">
+            <h2>Highest Per Course</h2>
+            <div>{{ highest_per_course|safe }}</div>
         </section>
     </div>
-    <script>
-        // Add JavaScript to handle form submission and display error popup
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.querySelector('form');
-            form.addEventListener('submit', async function(event) {
-                event.preventDefault();
-                const formData = new FormData(form);
-                const response = await fetch('/download_dataframe', {
-                    method: 'POST',
-                    body: formData
-                });
-                const data = await response.json();
-                if (data.error) {
-                    alert(data.error); // Display error message as a popup
-                } else {
-                    // Handle successful file download
-                    // For example, redirect to a success page or perform other actions
-                }
-            });
-        });
-    </script>
 </body>
 </html>
