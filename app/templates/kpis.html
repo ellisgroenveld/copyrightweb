@@ -53,6 +53,17 @@
                 <p>{% for classification, count in classification_counts.items() %}<strong>{{ classification }}:</strong> {{ count }}<br>{% endfor %}</p>
             </div>
             <div class="kpi-box">
+                <h3>Department Entries</h3>
+                {% for department, data in department_classification_counts.items() %}
+                <p><strong>{{ department }}</strong>: {{ data['total'] }} entries</p>
+                <ul class="classification-list">
+                    {% for classification, count in data['classifications'].items() %}
+                    <li>{{ classification }}: {{ count }}</li>
+                    {% endfor %}
+                </ul>
+                {% endfor %}
+            </div>
+            <div class="kpi-box">
                 <h3>ML Prediction Counts</h3>
                 <p>{% for prediction, count in ml_prediction_counts.items() %}<strong>{{ prediction }}:</strong> {{ count }}<br>{% endfor %}</p>
             </div>
@@ -84,6 +95,7 @@
                 <h3>Picture Count</h3>
                 <p>{{ picture_count }}</p>
             </div>
+            
         </section>
         
         <section class="highest-scoring">
@@ -98,7 +110,7 @@
                         <th>Status</th>
                         <th>Owner</th>
                         <th>Course Code</th>
-                        <th>ML Prediction & Reliabilityy</th>
+                        <th>ML Prediction & Reliability</th>
                         <th>Type</th>
                         <th># Students Registered</th>
                     </tr>

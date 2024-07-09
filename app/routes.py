@@ -142,39 +142,50 @@ def show_kpis(filename):
     highest_scoring = df[['Filename', 'url', 'pagecount', 'Classification', 'Status', 'Owner', 'Course code', 'ML Prediction', 'Reliability', 'Type', '#students_registered']].sort_values(by='pagecount', ascending=False)
     highest_scoring_list = highest_scoring.to_dict(orient='records')
     
-    highest_per_course = df.groupby('Course code')['pagecount'].sum().sort_values(ascending=False).head(10).reset_index()
+    highest_per_course = df.groupby('Course code')['pagecount'].max().reset_index()
+    highest_per_course = highest_per_course.merge(df, on=['Course code', 'pagecount'], how='left')
+    highest_per_course_html = highest_per_course.to_html(index=False)
     
-    department_counts = df['Department'].value_counts().to_dict()
-    material_types_counts = df['Filetype'].value_counts().to_dict()
+    departments = df['Department'].unique().tolist()
+    classifications = df['Classification'].unique().tolist()
+    statuses = df['Status'].unique().tolist()
     
-    custom_palette = ['#e81a31', '#ffffff', '#000000']
-    sns.set_palette(custom_palette)
+    department_classification_counts = {}
+    for dept in departments:
+        dept_df = df[df['Department'] == dept]
+        dept_classification_counts = dept_df['Classification'].value_counts().to_dict()
+        department_classification_counts[dept] = {
+            'total': len(dept_df),
+            'classifications': dept_classification_counts
+        }
     
-    plt.figure(figsize=(12, 6))
-    plt.subplot(1, 3, 1)
-    sns.barplot(x=list(department_counts.keys()), y=list(department_counts.values()))
-    plt.xticks(rotation=90)
-    plt.title('Materials by Department')
+    sorted_department_classification_counts = dict(sorted(department_classification_counts.items(), key=lambda item: item[1]['total'], reverse=True))
+
+    # Create plots and save to static folder
+    fig, axs = plt.subplots(3, 1, figsize=(10, 15))
     
-    plt.subplot(1, 3, 2)
-    sns.barplot(x=list(material_types_counts.keys()), y=list(material_types_counts.values()))
-    plt.xticks(rotation=90)
-    plt.title('Material Types Distribution')
+    # Plot 1: Classification Distribution
+    axs[0].bar(classification_counts.keys(), classification_counts.values())
+    axs[0].set_title('Classification Distribution')
+    axs[0].set_xlabel('Classification')
+    axs[0].set_ylabel('Count')
     
-    plt.subplot(1, 3, 3)
-    sns.barplot(x=list(status_counts.keys()), y=list(status_counts.values()))
-    plt.xticks(rotation=90)
-    plt.title('Material Status Distribution')
+    # Plot 2: ML Prediction Distribution
+    axs[1].bar(ml_prediction_counts.keys(), ml_prediction_counts.values())
+    axs[1].set_title('ML Prediction Distribution')
+    axs[1].set_xlabel('ML Prediction')
+    axs[1].set_ylabel('Count')
     
-    plt.tight_layout()
-    image_path = os.path.join('static', 'uploads', 'additional_kpis.png')
-    plt.savefig(os.path.join(app.root_path, image_path))
+    # Plot 3: Status Distribution
+    axs[2].bar(status_counts.keys(), status_counts.values())
+    axs[2].set_title('Status Distribution')
+    axs[2].set_xlabel('Status')
+    axs[2].set_ylabel('Count')
+    
+    plot_image_path = os.path.join(app.config['UPLOAD_FOLDER'], 'kpi_visualizations.png')
+    plt.savefig(plot_image_path)
     plt.close()
-    
-    if department != 'All':
-        department_df = df.copy()
-        department_df.to_excel(os.path.join(app.config['UPLOAD_FOLDER'], f'processed_data_{department}.xlsx'), index=False)
-    
+
     return render_template(
         'kpis.html',
         classification_counts=classification_counts,
@@ -187,15 +198,16 @@ def show_kpis(filename):
         avg_wordcount=avg_wordcount,
         picture_count=picture_count,
         highest_scoring=highest_scoring_list,
-        highest_per_course=highest_per_course.to_html(),
-        image_path=url_for('static', filename='uploads/additional_kpis.png'),
-        departments=['All'] + sorted(DEPARTMENTS),
-        classifications=sorted(CLASSIFICATIONS),
-        statuses=['All', 'Deleted', 'Published'],
+        highest_per_course=highest_per_course_html,
+        departments=departments,
         selected_department=department,
+        classifications=classifications,
         selected_classifications=selected_classifications,
+        statuses=statuses,
         selected_status=status_filter,
-        pagecount_toggle=pagecount_toggle
+        pagecount_toggle=pagecount_toggle,
+        image_path=plot_image_path,
+        department_classification_counts=sorted_department_classification_counts
     )
 
 @app.route('/full_table', methods=['GET'])
