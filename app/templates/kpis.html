@@ -13,7 +13,7 @@
             <form action="" method="get" id="filter-form">
                 <label for="department">Select Department:</label>
                 <select name="department" id="department" onchange="document.getElementById('filter-form').submit()">
-                    <option value="All" selected>All</option>
+                    <option value="All" {% if selected_department == 'All' %}selected{% endif %}>All</option>
                     {% for dept in departments %}
                     <option value="{{ dept }}" {% if dept == selected_department %}selected{% endif %}>{{ dept }}</option>
                     {% endfor %}
@@ -27,17 +27,19 @@
                     <label for="classification_{{ loop.index }}">{{ cls }}</label>
                 </div>
                 {% endfor %}
-
+            
                 <label for="status">Select Status:</label>
                 <select name="status" id="status" onchange="document.getElementById('filter-form').submit()">
+                    <option value="All" {% if selected_status == 'All' %}selected{% endif %}>All</option>
                     {% for status in statuses %}
                     <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ status }}</option>
                     {% endfor %}
                 </select>
-
+            
                 <label for="pagecount_toggle">Pagecount > 50:</label>
                 <input type="checkbox" name="pagecount_toggle" id="pagecount_toggle" {% if pagecount_toggle %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
             </form>
+            
 
             <form action="{{ url_for('download_filtered_dataframe') }}" method="post">
                 <input type="hidden" name="department" value="{{ selected_department }}">

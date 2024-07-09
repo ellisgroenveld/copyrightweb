@@ -111,8 +111,9 @@ def show_kpis(filename):
     
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     df = pd.read_excel(file_path)
-    
-    # Filter by department if not 'All'
+
+
+     # Filter by department if not 'All'
     if department != 'All':
         df = df[df['Department'] == department]
     
@@ -138,6 +139,8 @@ def show_kpis(filename):
     avg_pagecount = df['pagecount'].mean()
     avg_wordcount = df['wordcount'].mean()
     picture_count = df['picturecount'].sum()
+
+
     
     highest_scoring = df[['Filename', 'url', 'pagecount', 'Classification', 'Status', 'Owner', 'Course code', 'ML Prediction', 'Reliability', 'Type', '#students_registered']].sort_values(by='pagecount', ascending=False)
     highest_scoring_list = highest_scoring.to_dict(orient='records')
@@ -160,6 +163,11 @@ def show_kpis(filename):
         }
     
     sorted_department_classification_counts = dict(sorted(department_classification_counts.items(), key=lambda item: item[1]['total'], reverse=True))
+
+    for deppy in DEPARTMENTS:
+        if deppy not in sorted_department_classification_counts:
+            print(deppy)
+
 
     # Create plots and save to static folder
     fig, axs = plt.subplots(3, 1, figsize=(10, 15))
@@ -199,11 +207,11 @@ def show_kpis(filename):
         picture_count=picture_count,
         highest_scoring=highest_scoring_list,
         highest_per_course=highest_per_course_html,
-        departments=departments,
+        departments=DEPARTMENTS, 
         selected_department=department,
-        classifications=classifications,
+        classifications=CLASSIFICATIONS, 
         selected_classifications=selected_classifications,
-        statuses=statuses,
+        statuses=statuses, 
         selected_status=status_filter,
         pagecount_toggle=pagecount_toggle,
         image_path=plot_image_path,
